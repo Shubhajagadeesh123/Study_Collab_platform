@@ -6,10 +6,12 @@ const { Server } = require("socket.io");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const multer = require("multer");
-
+const User = require('./models/User');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const app = express();
 const server = http.createServer(app);
-
+const Resource = require('./models/Resource');
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -19,6 +21,19 @@ app.use(express.json());
 ============================== */
 app.get("/", (req, res) => {
     res.send("🚀 Study Collaboration Platform Backend Running");
+});
+
+app.get('/api/resources', async (req, res) => {
+    const files = await Resource.find();
+    res.json(files);
+});
+
+// Route to "upload" (simulated for now, saving to DB)
+app.post('/api/resources', async (req, res) => {
+    const { title, type } = req.body;
+    const newResource = new Resource({ title, type });
+    await newResource.save();
+    res.json(newResource);
 });
 
 /* ==============================
