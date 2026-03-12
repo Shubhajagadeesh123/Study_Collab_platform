@@ -1,0 +1,16 @@
+# Dependency folders (very heavy, don't upload)
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment variables (Saves your MongoDB Password!)
+.env
+server/.env
+
+# Build folders
+client/build/
+dist/
+
+# Logs and OS files
+npm-debug.log*
+.DS_Store
