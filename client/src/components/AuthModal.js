@@ -21,8 +21,8 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
           setIsRegister(false);
           alert("Registration successful! Please login.");
         } else {
-          localStorage.setItem('token', data.token); // Store session
-          onAuthSuccess(data.username);
+          localStorage.setItem('token', data.token);
+          onAuthSuccess(data.username || "Student"); 
         }
       } else {
         alert(data.error || "Authentication failed");
@@ -33,27 +33,64 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4">
-      <div className="bg-white w-full max-w-md rounded-[32px] p-10 shadow-2xl relative animate-in zoom-in duration-300">
-        <button onClick={onClose} className="absolute top-8 right-8 text-gray-400 hover:text-gray-900 transition">✕</button>
-        <h2 className="text-4xl font-black mb-2 tracking-tighter">{isRegister ? "Join StudySync" : "Welcome Back"}</h2>
-        <div className="space-y-4 mt-8">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 overflow-hidden">
+      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-500" onClick={onClose}></div>
+      
+      <div className="relative bg-white w-full max-w-md rounded-[48px] p-12 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.15)] border border-slate-200 animate-in zoom-in-95 duration-300">
+        
+        {/* TOP ACCENT LINE */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-indigo-600 rounded-b-full"></div>
+
+        <button onClick={onClose} className="absolute top-10 right-10 text-slate-400 hover:text-slate-600 transition-colors font-black uppercase text-xs tracking-widest">
+          Close_Esc
+        </button>
+
+        <div className="mb-10">
+          <p className="text-indigo-600 text-xs font-black uppercase tracking-[0.4em] mb-4">Security Protocol</p>
+          <h2 className="text-5xl font-[1000] tracking-tighter text-slate-900 leading-none uppercase italic">
+            {isRegister ? "Join_Sync" : "Welcome_Back"}
+          </h2>
+        </div>
+
+        <div className="space-y-5">
           {isRegister && (
-            <input type="text" placeholder="Username" className="w-full p-4 bg-gray-50 rounded-2xl border border-gray-100 outline-none focus:ring-2 focus:ring-indigo-600"
-              onChange={(e) => setFormData({...formData, username: e.target.value})} />
+            <input 
+              type="text" 
+              placeholder="USERNAME_ID" 
+              className="w-full p-6 bg-slate-50 rounded-2xl border border-slate-100 outline-none focus:border-indigo-400 focus:bg-white text-slate-900 placeholder:text-slate-400 text-sm font-bold tracking-widest transition-all"
+              onChange={(e) => setFormData({...formData, username: e.target.value})} 
+            />
           )}
-          <input type="email" placeholder="Email" className="w-full p-4 bg-gray-50 rounded-2xl border border-gray-100 outline-none focus:ring-2 focus:ring-indigo-600"
-            onChange={(e) => setFormData({...formData, email: e.target.value})} />
-          <input type="password" placeholder="Password" className="w-full p-4 bg-gray-50 rounded-2xl border border-gray-100 outline-none focus:ring-2 focus:ring-indigo-600"
-            onChange={(e) => setFormData({...formData, password: e.target.value})} />
-          <button onClick={handleAuth} className="w-full py-4 bg-indigo-600 text-white rounded-2xl font-bold hover:bg-indigo-700 shadow-xl transition-all">
-            {isRegister ? "Create Account" : "Sign In"}
+          <input 
+            type="email" 
+            placeholder="EMAIL_ACCESS" 
+            className="w-full p-6 bg-slate-50 rounded-2xl border border-slate-100 outline-none focus:border-indigo-400 focus:bg-white text-slate-900 placeholder:text-slate-400 text-sm font-bold tracking-widest transition-all"
+            onChange={(e) => setFormData({...formData, email: e.target.value})} 
+          />
+          <input 
+            type="password" 
+            placeholder="SECURE_PASS" 
+            className="w-full p-6 bg-slate-50 rounded-2xl border border-slate-100 outline-none focus:border-indigo-400 focus:bg-white text-slate-900 placeholder:text-slate-400 text-sm font-bold tracking-widest transition-all"
+            onChange={(e) => setFormData({...formData, password: e.target.value})} 
+          />
+          
+          <button 
+            onClick={handleAuth} 
+            className="w-full py-6 bg-indigo-600 text-white rounded-[28px] text-xs font-[1000] uppercase tracking-[0.3em] shadow-xl shadow-indigo-200 hover:bg-indigo-700 hover:scale-[1.02] active:scale-95 transition-all mt-6"
+          >
+            {isRegister ? "Create Account" : "Authorize Session"}
           </button>
         </div>
-        <p className="mt-6 text-center text-sm text-gray-500">
-          {isRegister ? "Already have an account?" : "New here?"} 
-          <button onClick={() => setIsRegister(!isRegister)} className="ml-2 text-indigo-600 font-bold">{isRegister ? "Log In" : "Register Now"}</button>
+
+        <p className="mt-10 text-center text-xs font-black uppercase tracking-widest text-slate-400">
+          {isRegister ? "Existing User?" : "New Arrival?"} 
+          <button onClick={() => setIsRegister(!isRegister)} className="ml-3 text-indigo-600 hover:underline underline-offset-4">
+            {isRegister ? "Log_In" : "Register_Now"}
+          </button>
         </p>
+
+        {/* BOTTOM DECORATIVE LINE */}
+        <div className="mt-8 h-px w-full bg-gradient-to-r from-transparent via-slate-200 to-transparent"></div>
       </div>
     </div>
   );

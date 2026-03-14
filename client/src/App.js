@@ -1,38 +1,124 @@
 import React, { useState, useEffect } from 'react';
 import Home from './pages/Home';
-import Dashboard from './pages/Dashboard';
+import Groups from './pages/Groups';
+import UserProfile from './pages/UserProfile';
 import AuthModal from './components/AuthModal';
-import './output.css';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  // 1. PERSISTENCE LOGIC
+  // Load view, user object, and login status from localStorage
+  const [view, setView] = useState(() => {
+    return localStorage.getItem('study_sync_view') || 'home';
+  });
+
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('study_sync_user_obj');
+    return savedUser ? JSON.parse(savedUser) : { 
+      username: "Guest", 
+      avatar: "https://i.pravatar.cc/150?u=guest",
+      status: "Offline Node"
+    };
+  });
+
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return localStorage.getItem('study_sync_logged_in') === 'true';
+  });
+
   const [showAuth, setShowAuth] = useState(false);
-  const [user, setUser] = useState(null);
 
-  // Check if user is already logged in on refresh
+  // 2. SYNC TO LOCALSTORAGE
+  // Automatically saves state whenever view, user, or login status changes
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) setIsLoggedIn(true);
-  }, []);
+    localStorage.setItem('study_sync_view', view);
+    if (user) {
+      localStorage.setItem('study_sync_user_obj', JSON.stringify(user));
+    }
+    localStorage.setItem('study_sync_logged_in', isLoggedIn);
+  }, [view, user, isLoggedIn]);
 
-  const handleAuthSuccess = (username) => {
+  // 3. HANDLERS
+  const handleAuthSuccess = (name) => {
+    const newUser = { 
+      username: name, 
+      avatar: `https://i.pravatar.cc/150?u=${name}`,
+      status: "Active Node" 
+    };
+    setUser(newUser);
     setIsLoggedIn(true);
     setShowAuth(false);
-    setUser(username);
+  };
+
+  const handleUpdateStatus = (newStatus) => {
+    setUser(prevUser => ({
+      ...prevUser,
+      status: newStatus
+    }));
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
+    localStorage.clear(); 
     setIsLoggedIn(false);
+    setUser({ 
+      username: "Guest", 
+      avatar: "https://i.pravatar.cc/150?u=guest",
+      status: "Offline Node"
+    });
+    setView('home');
+  };
+
+  const handleExplore = () => {
+    if (isLoggedIn) {
+      setView('explore');
+    } else {
+      setShowAuth(true);
+    }
+  };
+
+  const handleOpenProfile = () => {
+    if (isLoggedIn) {
+      setView('profile');
+    } else {
+      setShowAuth(true);
+    }
+  };
+
+  const handleBackToHome = () => {
+    setView('home');
+  };
+
+  // 4. RENDER ENGINE
+  const renderView = () => {
+    switch (view) {
+      case 'profile':
+        return (
+          <UserProfile
+            user={user}
+            onBack={handleBackToHome}
+            onLogout={handleLogout}
+            onUpdateStatus={handleUpdateStatus}
+          />
+        );
+      
+      case 'explore':
+        return <Groups onBack={handleBackToHome} />;
+      
+      case 'home':
+      default:
+        return (
+          <Home 
+            onOpenAuth={() => setShowAuth(true)} 
+            onExplore={handleExplore} 
+            onOpenProfile={handleOpenProfile}
+            isLoggedIn={isLoggedIn} 
+            user={user?.username || 'Guest'} 
+          />
+        );
+    }
   };
 
   return (
-    <div className="App">
-      {!isLoggedIn ? (
-        <Home onOpenAuth={() => setShowAuth(true)} />
-      ) : (
-        <Dashboard onLogout={handleLogout} />
-      )}
+    <div className="min-h-screen bg-[#f1f5f9] transition-colors duration-500">
+      {renderView()}
 
       <AuthModal 
         isOpen={showAuth} 

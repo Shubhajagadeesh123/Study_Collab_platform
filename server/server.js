@@ -138,10 +138,6 @@ io.on("connection", (socket) => {
     });
 });
 
-const User = require('./models/User');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-
 // Registration Route
 app.post('/api/auth/register', async (req, res) => {
     try {
