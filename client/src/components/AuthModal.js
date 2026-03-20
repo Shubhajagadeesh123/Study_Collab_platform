@@ -21,27 +21,46 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
           setIsRegister(false);
           alert("Registration successful! Please login.");
         } else {
+          // Store token
           localStorage.setItem('token', data.token);
-          onAuthSuccess(data.username || "Student"); 
+          
+          /**
+           * THE FIX: 
+           * 1. Try to get username from backend (data.username)
+           * 2. If null, use the username typed in the form (formData.username)
+           * 3. If that's empty, grab the part of the email before the '@'
+           */
+          const finalName = data.username || formData.username || formData.email.split('@')[0] || "User";
+          
+          onAuthSuccess(finalName); 
         }
       } else {
         alert(data.error || "Authentication failed");
       }
     } catch (err) {
       console.error("Auth Error:", err);
+      alert("Server connection failed. Is your backend running on port 5000?");
     }
   };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 overflow-hidden">
-      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-500" onClick={onClose}></div>
+      {/* OVERLAY */}
+      <div 
+        className="absolute inset-0 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-500" 
+        onClick={onClose}
+      ></div>
       
+      {/* MODAL CARD */}
       <div className="relative bg-white w-full max-w-md rounded-[48px] p-12 shadow-[0_32px_64px_-12px_rgba(0,0,0,0.15)] border border-slate-200 animate-in zoom-in-95 duration-300">
         
         {/* TOP ACCENT LINE */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-indigo-600 rounded-b-full"></div>
 
-        <button onClick={onClose} className="absolute top-10 right-10 text-slate-400 hover:text-slate-600 transition-colors font-black uppercase text-xs tracking-widest">
+        <button 
+          onClick={onClose} 
+          className="absolute top-10 right-10 text-slate-400 hover:text-slate-600 transition-colors font-black uppercase text-xs tracking-widest"
+        >
           Close_Esc
         </button>
 
@@ -61,12 +80,14 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
               onChange={(e) => setFormData({...formData, username: e.target.value})} 
             />
           )}
+          
           <input 
             type="email" 
             placeholder="EMAIL_ACCESS" 
             className="w-full p-6 bg-slate-50 rounded-2xl border border-slate-100 outline-none focus:border-indigo-400 focus:bg-white text-slate-900 placeholder:text-slate-400 text-sm font-bold tracking-widest transition-all"
             onChange={(e) => setFormData({...formData, email: e.target.value})} 
           />
+          
           <input 
             type="password" 
             placeholder="SECURE_PASS" 
@@ -84,7 +105,10 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
 
         <p className="mt-10 text-center text-xs font-black uppercase tracking-widest text-slate-400">
           {isRegister ? "Existing User?" : "New Arrival?"} 
-          <button onClick={() => setIsRegister(!isRegister)} className="ml-3 text-indigo-600 hover:underline underline-offset-4">
+          <button 
+            onClick={() => setIsRegister(!isRegister)} 
+            className="ml-3 text-indigo-600 hover:underline underline-offset-4"
+          >
             {isRegister ? "Log_In" : "Register_Now"}
           </button>
         </p>

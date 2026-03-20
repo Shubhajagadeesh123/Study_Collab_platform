@@ -2,6 +2,10 @@ import React from 'react';
 
 const Home = ({ onOpenAuth, onExplore, onOpenProfile, isLoggedIn, user }) => {
   
+  // Safely extract data from the user object
+  
+  const displayAvatar = isLoggedIn && user?.avatar ? user.avatar : "https://i.pravatar.cc/150?u=guest";
+  
   const handleAction = () => {
     if (!isLoggedIn) {
       onOpenAuth(); 
@@ -40,24 +44,18 @@ const Home = ({ onOpenAuth, onExplore, onOpenProfile, isLoggedIn, user }) => {
               Access Portal
             </button>
           ) : (
-            /* CLICKABLE USER PROFILE ICON - Updated as requested */
             <button 
               onClick={onOpenProfile}
               className="group flex items-center gap-4 p-1.5 pr-5 bg-white border border-slate-200 rounded-2xl hover:border-indigo-400 hover:shadow-xl hover:shadow-indigo-100 transition-all active:scale-95"
             >
               <div className="w-11 h-11 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 font-black relative overflow-hidden">
-                {user?.avatar ? (
-                  <img src={user.avatar} className="w-full h-full object-cover" alt="" />
-                ) : (
-                  <span className="text-lg">{user?.charAt(0) || 'U'}</span>
-                )}
-                {/* Visual Status Indicator */}
+                <img src={displayAvatar} className="w-full h-full object-cover" alt="" />
                 <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></div>
               </div>
               
               <div className="text-left hidden sm:block">
                 <p className="text-[9px] font-black uppercase tracking-widest text-indigo-600 leading-none mb-1">View Profile</p>
-                <p className="text-sm font-bold text-slate-700 truncate max-w-[100px]">{user || 'User_Node'}</p>
+                <p className="text-sm font-bold text-slate-700 truncate max-w-[100px]">{isLoggedIn ? user?.username : 'Guest'}</p>
               </div>
             </button>
           )}
